@@ -5,8 +5,9 @@ import numpy as np
 
 
 @njit
-def distances(X, v, alpha, k):
+def distances(X, v, alpha):
     N, P = X.shape
+    k, _ = v.shape
     dists = np.zeros((N, k))
     for i in prange(N):
         for p in range(P):
@@ -16,18 +17,18 @@ def distances(X, v, alpha, k):
 
 
 @njit
-def softmax(x):
+def softmax(x, axis):
     """softmax function with the max trick
     optimization is probably not worth it
     """
     x = x.copy()
     x -= x.max()  # doesn't change result
-    return np.exp(x) / x.sum()
+    return np.exp(x) / x.sum(axis)
 
 
 @njit
-def M_nk(X, v, alpha, k):
-    return softmax(-distances(X, v, alpha, k))
+def M_nk(X, v, alpha):
+    return softmax(-distances(X, v, alpha), axis=1)
 
 
 @njit
@@ -68,6 +69,7 @@ def cross_entropy(y_true, y_pred):
             ans -= np.log(np.maximum(1 - y_pred[i], eps))
     return ans
 
+
 def make_bounds(P, k):
     # only the w_k are constrained between 0 and 1
     return [(None, None)] * (2 * P) + [(0, 1)] * k + [(None, None)] * (k * P)
@@ -94,8 +96,8 @@ def LFR_compute(params, X, is_protected, k):
 
     # probabilistic mapping
     mapping = np.empty((N, k))
-    mapping[is_protected] = M_nk(X[is_protected], v, alpha_p, k)
-    mapping[~is_protected] = M_nk(X[~is_protected], v, alpha_np, k)
+    mapping[is_protected] = M_nk(X[is_protected], v, alpha_p)
+    mapping[~is_protected] = M_nk(X[~is_protected], v, alpha_np)
 
     # reconstructed values
     reconstructed = np.dot(mapping, v)

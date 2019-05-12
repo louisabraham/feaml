@@ -49,6 +49,7 @@ class LFR:
         if self.seed is not None:
             np.random.seed(self.seed)
 
+        # TODO: tweak model inits
         model_inits = np.random.uniform(
             size=self.features_dim * 2 + self.k + self.features_dim * self.k
         )
