@@ -17,18 +17,32 @@ def distances(X, v, alpha):
 
 
 @njit
-def softmax(x, axis):
-    """softmax function with the max trick
-    optimization is probably not worth it
+def softmax1(x):
+    """softmax function on axis 1 swith the max trick
     """
     x = x.copy()
-    x -= x.max()  # doesn't change result
-    return np.exp(x) / x.sum(axis)
+    N, k = x.shape
+
+    for i in prange(N):
+        x_max = 0
+        for j in range(k):
+            if x[i, j] > x_max:
+                x_max = x[i, j]
+
+        norm = 0
+        for j in range(k):
+            x[i, j] = np.exp(x[i, j] - x_max)
+            norm += x[i, j]
+
+        for j in range(k):
+            x[i, j] /= norm
+
+    return x
 
 
 @njit
 def M_nk(X, v, alpha):
-    return softmax(-distances(X, v, alpha), axis=1)
+    return softmax1(-distances(X, v, alpha))
 
 
 @njit
