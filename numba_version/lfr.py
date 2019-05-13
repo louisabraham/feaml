@@ -2,7 +2,13 @@ import numpy as np
 import scipy.optimize as optim
 
 
-from helpers import make_bounds, with_logging, LFR_compute, LFR_optim_obj
+from .helpers import (
+    make_bounds,
+    with_logging,
+    LFR_compute,
+    LFR_optim_obj,
+    unpack_params,
+)
 
 
 class LFR:
@@ -93,6 +99,11 @@ class LFR:
 
         # Mutated, fairer dataset with new labels
         return mapping, reconstructed, pred
+
+    @property
+    def centroids(self):
+        alpha_p, alpha_np, w, v = unpack_params(self.params, self.features_dim, self.k)
+        return v
 
     def fit_transform(self, X, is_protected, y, seed=None):
         """fit and transform methods sequentially"""
