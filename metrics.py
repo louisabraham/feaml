@@ -38,11 +38,11 @@ def demographic_parity(pred, y, is_protected):
 
 def equalized_odds(pred, y, is_protected):
     y = y > 0
-    return abs(pred[is_protected & y] - pred[~is_protected & y]) + abs(
-        pred[is_protected & ~y] - pred[~is_protected & ~y]
+    return abs(pred[is_protected & y].mean() - pred[~is_protected & y].mean()) + abs(
+        pred[is_protected & ~y].mean() - pred[~is_protected & ~y].mean()
     )
 
 
 def equal_opportunity(pred, y, is_protected):
     y = y > 0
-    return abs(pred[is_protected & y] - pred[~is_protected & y])
+    return abs(pred[is_protected & y].mean() - pred[~is_protected & y].mean())

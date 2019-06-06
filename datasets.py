@@ -40,7 +40,7 @@ def load_adult(*, valid_split=0.25, path="adult.npz", device=None):
 def concat_datasets(*datasets):
     return TensorDataset(
         *(
-            torch.cat([datasets[i].tensors[j] for i in range(len(datasets))], axis=1)
+            torch.cat([datasets[i].tensors[j] for i in range(len(datasets))], dim=0)
             for j in range(len(datasets[0].tensors))
         )
     )
