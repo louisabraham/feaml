@@ -74,7 +74,7 @@ class ABXNet(nn.Module):
         X = X[:, None, :]
 
         def append(t, f):
-            return torch.cat((t, f(t.shape[:-1] + (1,))), dim=-1)
+            return torch.cat((t, f(t.shape[:-1] + (1,)).to(t.device)), dim=-1)
 
         if x_protected:
             A = append(A, torch.ones)

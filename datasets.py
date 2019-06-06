@@ -37,6 +37,15 @@ def load_adult(*, valid_split=0.25, path="adult.npz", device=None):
     return train, valid, test
 
 
+def concat_datasets(*datasets):
+    return TensorDataset(
+        *(
+            torch.cat([datasets[i].tensors[j] for i in range(len(datasets))], axis=1)
+            for j in range(len(datasets[0].tensors))
+        )
+    )
+
+
 def abx_data_gen(dataset, x_protected: bool, batch_size: int, reject: int):
 
     X, _, is_protected = dataset.tensors

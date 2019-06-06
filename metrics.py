@@ -13,7 +13,7 @@ def dist(x, y):
 
 
 @njit(parallel=True)
-def abx(encoded, is_protected, n_sample=10 ** 6):
+def abx(encoded, is_protected, n_sample=10 ** 7):
     ans = numba.int64(0)
     pos = np.nonzero(is_protected)[0]
     neg = np.nonzero(~is_protected)[0]
@@ -25,12 +25,9 @@ def abx(encoded, is_protected, n_sample=10 ** 6):
     return ans / n_sample - 0.5
 
 
-def adv_generalization(
-    encoded, is_protected, ModelCls=GradientBoostingClassifier, p=0.1
-):
+def adv_generalization(encoded, is_protected, model, p=0.1):
     train = np.random.rand(len(encoded)) < p
     test = ~train
-    model = ModelCls()
     model.fit(encoded[train], is_protected[train])
     return model.score(encoded[test], is_protected[test])
 
