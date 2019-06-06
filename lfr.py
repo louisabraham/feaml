@@ -3,16 +3,6 @@ from torch import nn
 import torch.nn.functional as F
 
 
-def distances(X, centroids, alpha):
-    aux = (X[:, None, :] - centroids[None, :, :]) ** 2
-    aux *= alpha[None, None, :]
-    return aux.sum(-1)
-
-
-def LFR_compute(params, X, is_protected, k):
-    N, P = X.shape
-
-
 class LFR(nn.Module):
     def __init__(self, features_dim, k=5, A_x=1, A_y=1, A_z=50):
         super().__init__()
@@ -37,7 +27,13 @@ class LFR(nn.Module):
 
     @staticmethod
     def M_nk(X, centroids, alpha):
-        return F.softmax(distances(X, centroids, alpha), dim=-1)
+        return F.softmax(LFR.distances(X, centroids, alpha), dim=-1)
+
+    @staticmethod
+    def distances(X, centroids, alpha):
+        aux = (X[:, None, :] - centroids[None, :, :]) ** 2
+        aux *= alpha[None, None, :]
+        return aux.sum(-1)
 
     def forward(self, x, is_protected):
         n = len(x)
