@@ -123,8 +123,8 @@ class ABXNet(nn.Module):
     def valid_abx_loss(self, x, y, is_protected, n_sample=10 ** 6):
         with torch.no_grad():
             encoded, _, _ = self.forward(x, is_protected)
-        encoded = encoded.numpy()
-        is_protected = is_protected.numpy()
+        encoded = encoded.cpu().numpy()
+        is_protected = is_protected.cpu().numpy()
         return max(
             abx(encoded, is_protected, n_sample=n_sample),
             abx(encoded, ~is_protected, n_sample=n_sample),
