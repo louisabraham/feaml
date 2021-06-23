@@ -19,6 +19,7 @@ def make_moons(
 
 
 def load_adult(*, valid_split=0.25, path="adult.npz", device=None):
+    # !wget https://github.com/VectorInstitute/laftr/raw/master/data/adult/adult.npz
     data = np.load(path)
 
     datasets = []
@@ -66,4 +67,3 @@ def abx_data_gen(dataset, x_protected: bool, batch_size: int, reject: int):
             B = X_pos[sample(n_pos)]
             X = X_neg[torch.randint(n_neg, size=(batch_size,))]
         yield A, B, X
-
